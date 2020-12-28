@@ -13,7 +13,14 @@ const (
 	tasksURL       = "/druid/indexer/v1/tasks"
 	workersURL     = "/druid/indexer/v1/workers"
 	supervisorURL  = "/druid/indexer/v1/supervisor?full"
+	sqlURL         = "/druid/v2/sql"
 )
+
+const totalRowsSQL = `SELECT
+datasource,
+SUM("num_rows") FILTER (WHERE (is_published = 1 AND is_overshadowed = 0) OR is_realtime = 1) AS total_rows
+FROM sys.segments
+GROUP BY 1`
 
 // MetricCollector includes the list of metrics
 type MetricCollector struct {
@@ -25,6 +32,13 @@ type MetricCollector struct {
 	DruidSegmentCount         *prometheus.Desc
 	DruidSegmentSize          *prometheus.Desc
 	DruidSegmentReplicateSize *prometheus.Desc
+	DruidDataSourcesTotalRows *prometheus.Desc
+}
+
+// DataSourcesTotalRows shows total rows from each datasource
+type DataSourcesTotalRows []struct {
+	Datasource string `json:"datasource"`
+	TotalRows  int64  `json:"total_rows"`
 }
 
 // SegementInterface is the interface for parsing segments data
