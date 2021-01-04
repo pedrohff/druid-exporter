@@ -178,7 +178,7 @@ func Collector() *MetricCollector {
 		),
 		DruidDataSourcesTotalRows: prometheus.NewDesc("druid_datasource_total_rows",
 			"Number of rows in a datasource",
-			[]string{"datasource_name"}, nil),
+			[]string{"datasource_name", "source"}, nil),
 	}
 }
 
@@ -233,6 +233,6 @@ func (collector *MetricCollector) Collect(ch chan<- prometheus.Metric) {
 	}
 
 	for _, data := range GetDruidDataSourcesTotalRows(sqlURL) {
-		ch <- prometheus.MustNewConstMetric(collector.DruidDataSourcesTotalRows, prometheus.GaugeValue, float64(data.TotalRows), data.Datasource)
+		ch <- prometheus.MustNewConstMetric(collector.DruidDataSourcesTotalRows, prometheus.GaugeValue, float64(data.TotalRows), data.Datasource, data.Source)
 	}
 }

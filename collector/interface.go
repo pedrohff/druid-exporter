@@ -38,6 +38,7 @@ type MetricCollector struct {
 // DataSourcesTotalRows shows total rows from each datasource
 type DataSourcesTotalRows []struct {
 	Datasource string `json:"datasource"`
+	Source     string `json:"source"`
 	TotalRows  int64  `json:"total_rows"`
 }
 
