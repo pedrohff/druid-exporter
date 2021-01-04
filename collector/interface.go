@@ -16,11 +16,11 @@ const (
 	sqlURL         = "/druid/v2/sql"
 )
 
-const totalRowsSQL = `SELECT
-datasource,
-SUM("num_rows") FILTER (WHERE (is_published = 1 AND is_overshadowed = 0) OR is_realtime = 1) AS total_rows
-FROM sys.segments
-GROUP BY 1`
+const totalRowsSQL = `select SEG.datasource, SUP.source,
+SUM(SEG."num_rows") FILTER (WHERE (SEG.is_published = 1 AND SEG.is_overshadowed = 0) OR SEG.is_realtime = 1) AS total_rows
+from sys.segments SEG
+inner join sys.supervisors SUP ON SEG.datasource=SUP.supervisor_id
+group by SEG.datasource, SUP.source`
 
 // MetricCollector includes the list of metrics
 type MetricCollector struct {
